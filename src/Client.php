@@ -1,8 +1,6 @@
 <?php
 namespace WowzaRestApi;
 
-use GuzzleHttp\Client;
-
 class Client
 {
     const AUTH_TYPE_NONE = 'none';
@@ -22,6 +20,58 @@ class Client
     public function __construct(array $config = [])
     {
         $this->initConfiguration($config);
+    }
+
+    /**
+     * Sets configuration option
+     *
+     * @param string $option
+     * @param string $value
+     */
+    public function setOption($option, $value)
+    {
+        $this->config[$option] = $value;
+    }
+
+    public function getOption($option)
+    {
+        if ($this->isOptionSet($option)) {
+            return $this->config[$option];
+        }
+        return null;
+    }
+
+    /**
+     * Sets authentication details
+     *
+     * @param string $login
+     * @param string $password
+     * @param string $authType
+     */
+    public function setCredentials($login, $password, $authType = 'digest')
+    {
+        $this->setOption('login', $login);
+        $this->setOption('password', $password);
+        $this->setOption('authType', $authType);
+    }
+
+    public function getApplicationList($withSettings=true)
+    {
+        $uri = '/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications';
+        $data = $this->execGETRequest($uri);
+        if ($withSettings) {
+            foreach($data->applications as $app=>$idx) {
+                // TODO
+                // $this->getApplicationSettings($app->id);
+            }
+        }
+        return $data->applications;
+    }
+
+    public function getApplicationSettings($appName) {
+        $uri ='/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/'.$appName;
+        $data = $this->execGETRequest($uri);
+        return $data;
     }
 
     /**
@@ -69,28 +119,19 @@ class Client
         return false;
     }
 
-    /**
-     * Sets authentication details
-     *
-     * @param string $login
-     * @param string $password
-     * @param string $authType
-     */
-    public function setCredentials($login, $password, $authType = 'digest')
+    private function execGETRequest($uri)
     {
-        $this->setOption('login', $login);
-        $this->setOption('password', $password);
-        $this->setOption('authType', $authType);
+        $req = new \GuzzleHttp\Client();
+        $url = sprintf('%s://%s:%s%s',
+            $this->getOption('protocol'),
+            $this->getOption('host'),
+            $this->getOption('port'), $uri);
+        $res = $req->get($url,['headers'=>['Accept'=>'application/json; charset=utf-8']]);
+        if ($res->getStatusCode()==200) {
+            $n=$res->getBody();
+            return json_decode($n->getContents());
+        }
+        return null;
     }
 
-    /**
-     * Sets configuration option
-     *
-     * @param string $option
-     * @param string $value
-     */
-    public function setOption($option, $value)
-    {
-        $this->config[$option] = $value;
-    }
 }
