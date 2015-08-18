@@ -1,7 +1,7 @@
 <?php
 namespace WowzaRestApi;
 
-class Client
+class WowzaApiClient
 {
     const AUTH_TYPE_NONE = 'none';
     const AUTH_TYPE_DIGEST = 'digest';
@@ -55,23 +55,29 @@ class Client
         $this->setOption('authType', $authType);
     }
 
-    public function getApplicationList($withSettings=true)
+    /**
+     * @return array
+     */
+    public function getApplicationList()
     {
+        $ret = array();
         $uri = '/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications';
         $data = $this->execGETRequest($uri);
-        if ($withSettings) {
-            foreach($data->applications as $app=>$idx) {
-                // TODO
-                // $this->getApplicationSettings($app->id);
-            }
+        foreach ($data->applications as $idx => $app) {
+            $ret[] = new WowzaApplication($app);
         }
-        return $data->applications;
+        return $ret;
     }
 
+    /**
+     * @param $appName
+     * @return WowzaApplicationSettings
+     */
     public function getApplicationSettings($appName) {
         $uri ='/v2/servers/_defaultServer_/vhosts/_defaultVHost_/applications/'.$appName;
         $data = $this->execGETRequest($uri);
-        return $data;
+        print_r($data);
+        return new WowzaApplicationSettings($data);
     }
 
     /**

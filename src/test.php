@@ -1,8 +1,11 @@
 <?php
-require '../vendor/autoload.php';
-require 'Client.php';
+namespace WowzaRestApi;
 
-$c=new WowzaRestApi\Client();
+require __DIR__ . '/../vendor/autoload.php';
+
+$c = new WowzaApiClient();
 
 $res=$c->getApplicationList();
-var_dump($res);
+foreach ($res as $app) {
+    $c->getApplicationSettings($app->name);
+}

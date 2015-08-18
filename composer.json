@@ -2,6 +2,11 @@
     "name": "anteploon/wowzarestapiclient",
     "description": "Wowza REST API Client",
     "type": "library",
+    "autoload": {
+        "psr-4": {
+            "WowzaRestApi\\": "src/"
+        }
+    },
     "require": {
         "guzzlehttp/guzzle": "^6.0"
     },
