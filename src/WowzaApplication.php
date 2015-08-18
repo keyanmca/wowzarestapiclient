@@ -16,13 +16,13 @@ class WowzaApplication
 
     public function __construct($object = null)
     {
-        if (!is_null($object) && is_object($object)) {
-            $this->name = $object->id;
-            $this->appType = strtolower($object->appType);
-            $this->dvrEnabled = $object->dvrEnabled;
-            $this->drmEnabled = $object->drmEnabled;
-            $this->transcoderEnabled = $object->transcoderEnabled;
-            $this->streamTargetsEnabled = $object->streamTargetsEnabled;
+        if (!is_null($object) && (is_object($object) || is_array($object))) {
+            $this->name = $object['id'];
+            $this->appType = strtolower($object['appType']);
+            $this->dvrEnabled = $object['dvrEnabled'];
+            $this->drmEnabled = $object['drmEnabled'];
+            $this->transcoderEnabled = $object['transcoderEnabled'];
+            $this->streamTargetsEnabled = $object['streamTargetsEnabled'];
         }
     }
 }

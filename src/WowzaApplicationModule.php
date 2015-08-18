@@ -10,7 +10,7 @@ class WowzaApplicationModule
 
     public function __construct($object = null)
     {
-        if (!is_null($object) && is_object($object)) {
+        if (!is_null($object) && (is_object($object) || is_array($object))) {
             $this->order = $object['order'];
             $this->name = $object['name'];
             $this->description = $object['description'];
